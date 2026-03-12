@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Java Array Loop Visualizer - Double Array Manipulation</title>
+<style>
+body{ font-family:Arial; margin:40px; text-align:center; background-color:#f5f5f5; }
+.container{ max-width:1200px; margin:0 auto; }
+.panel{ border:2px solid #3498db; border-radius:10px; padding:20px; margin-bottom:20px; background-color:white; box-shadow:0 4px 8px rgba(0,0,0,0.1); display:inline-block; width:90%; }
+.arrayBox{ display:inline-block; width:90px; height:90px; border:2px solid #2c3e50; border-radius:8px; margin:5px; text-align:center; background-color:#ecf0f1; transition:all 0.3s ease; vertical-align:middle; line-height:1.4; padding:5px; }
+.arrayBox:hover{ transform:scale(1.05); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+.highlight{ background:#f1c40f; border-color:#e67e22; transform:scale(1.05); box-shadow:0 0 20px rgba(241,196,15,0.5); }
+.modified{ background:#2ecc71; border-color:#27ae60; color:white; }
+table{ border-collapse:collapse; margin:auto; background-color:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+td{ width:100px; height:100px; border:2px solid #34495e; text-align:center; font-weight:bold; font-size:16px; transition:all 0.3s ease; }
+.highlight2D{ background:#f39c12; color:white; transform:scale(1.02); }
+.modified2D{ background:#27ae60; color:white; }
+button{ padding:12px 24px; margin:8px; font-size:16px; border:none; border-radius:5px; cursor:pointer; transition:all 0.3s ease; font-weight:bold; }
+button:hover{ transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+.btn-primary{ background:#3498db; color:white; }
+.btn-success{ background:#2ecc71; color:white; }
+.btn-warning{ background:#f39c12; color:white; }
+.btn-danger{ background:#e74c3c; color:white; }
+.btn-info{ background:#9b59b6; color:white; }
+input[type="text"], input[type="number"]{ padding:8px; margin:5px; border:2px solid #bdc3c7; border-radius:4px; font-size:14px; transition:border 0.3s ease; }
+input[type="text"]:focus, input[type="number"]:focus{ border-color:#3498db; outline:none; }
+.sumBox{ font-size:28px; font-weight:bold; color:#e74c3c; margin:15px 0; padding:15px; background-color:#fdf2e9; border-radius:8px; display:inline-block; }
+.error{ color:#e74c3c; font-weight:bold; padding:10px; background-color:#fadbd8; border-radius:5px; margin:10px 0; }
+.status{ font-size:18px; padding:15px; background-color:#d4e6f1; border-radius:8px; margin:10px 0; color:#2c3e50; }
+.code-snippet{ background-color:#2c3e50; color:#ecf0f1; padding:20px; border-radius:8px; text-align:left; font-family:'Courier New', monospace; margin:20px 0; font-size:16px; line-height:1.6; }
+.highlight-line{ background-color:#34495e; color:#f1c40f; padding:2px 5px; border-radius:3px; }
+.section-title{ color:#2c3e50; border-bottom:3px solid #3498db; padding-bottom:10px; margin:30px 0 20px; }
+.console-line{ display:block; padding:3px 0; border-bottom:1px solid #34495e; font-family:'Courier New', monospace; }
+.console-line:last-child{ border-bottom:none; }
+.console-container{ text-align:left; max-height:200px; overflow-y:auto; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1 style="color:#2c3e50;">Java Array Loop Visualizer</h1>
+<h2 style="color:#7f8c8d;">Double Array Forward & Backward Traversal</h2>
+
+<div class="code-snippet">
+<span style="color:#e74c3c;">double</span> d[] = {1.1, 2.2, 3.3, 4.4, 5.5, 6.6};<br>
+<span style="color:#f39c12;">for</span> (<span style="color:#e74c3c;">int</span> i = 0; i &lt; d.length; i++)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d[i] = d[i] + 1.0;<br>
+<br>
+<span style="color:#f39c12;">for</span> (<span style="color:#e74c3c;">int</span> i = d.length - 1; i &gt;= 0; i--)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(d[i] + <span style="color:#2ecc71;">" "</span>);
+</div>
+
+<div class="error" id="errorMsg"></div>
+
+<!-- Section 1: Forward Loop with Modification -->
+<div class="section-title">
+    <h2>Phase 1: Forward Loop - Adding 1.0 to Each Element</h2>
+</div>
+
+<div class="panel">
+    <div style="margin-bottom:20px;">
+        <button class="btn-primary" onclick="initializeArray()">1. Initialize Array</button>
+        <button class="btn-success" onclick="startForwardLoop()">2. Start Forward Loop</button>
+        <button class="btn-warning" onclick="stepForward()">3. Next Step (Add 1.0)</button>
+        <button class="btn-info" onclick="completeForwardLoop()">Complete All Steps</button>
+    </div>
+    
+    <div id="arrayDisplay" style="margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center;"></div>
+    
+    <div class="status" id="forwardStatus">
+        Click "Initialize Array" to begin
+    </div>
+    
+    <div style="margin-top:20px;">
+        <strong>Current Operation:</strong> <span id="forwardOperation">d[i] = d[i] + 1.0</span>
+    </div>
+</div>
+
+<!-- Section 2: Backward Loop - Printing Results -->
+<div class="section-title">
+    <h2>Phase 2: Backward Loop - Printing Modified Array (Each on New Line)</h2>
+</div>
+
+<div class="panel">
+    <div style="margin-bottom:20px;">
+        <button class="btn-primary" onclick="startBackwardLoop()">Start Backward Loop</button>
+        <button class="btn-warning" onclick="stepBackward()">Next Step (Print)</button>
+        <button class="btn-danger" onclick="resetVisualizer()">Reset All</button>
+    </div>
+    
+    <div id="arrayDisplayModified" style="margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center;"></div>
+    
+    <div class="status" id="backwardStatus">
+        Ready to print modified array in reverse
+    </div>
+    
+    <div style="margin-top:20px; text-align:left; background-color:#f8f9fa; padding:15px; border-radius:5px;">
+        <strong>Console Output (System.out.println) - Each on new line:</strong>
+        <div id="consoleOutput" style="font-family:'Courier New', monospace; margin-top:10px; padding:10px; background-color:#2c3e50; color:#ecf0f1; border-radius:5px; min-height:120px;">
+            <div class="console-container" id="consoleLines">
+                <!-- Lines will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="sumBox" id="outputDisplay" style="font-size:18px; max-width:100%; overflow-x:auto;">
+        Output (space-separated): 
+    </div>
+</div>
+
+<!-- Original 1D Array Visualizer (Enhanced) -->
+<div class="section-title">
+    <h2>Custom 1D Array Visualizer</h2>
+</div>
+
+<div class="panel">
+    <div>
+        Array Size <input type="number" id="size1D" value="6" min="1" max="10">
+        <button class="btn-primary" onclick="create1D()">Create Array</button>
+        <button class="btn-success" onclick="start1D()">Start</button>
+        <button class="btn-warning" onclick="step1D()">Next Step</button>
+        <button class="btn-danger" onclick="reset1D()">Reset</button>
+    </div>
+    
+    <div id="arrayInput1D" style="margin:15px 0;"></div>
+    
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+        <div>Start i <input type="number" id="startI1D" value="0"></div>
+        <div>End i <input type="number" id="endI1D" value="5"></div>
+        <div>Step <input type="number" id="step1D" value="1"></div>
+    </div>
+    
+    <div style="margin:15px 0;">
+        Operation: <select id="operation1D">
+            <option value="add">Add value (d[i] = d[i] + value)</option>
+            <option value="multiply">Multiply (d[i] = d[i] * value)</option>
+            <option value="print">Print d[i]</option>
+        </select>
+        <input type="number" id="operationValue1D" value="1.0" step="0.1">
+    </div>
+    
+    <div id="arrayDisplay1D" style="margin:20px 0; display:flex; flex-wrap:wrap; justify-content:center;"></div>
+    <div id="status1D" class="status"></div>
+    <div id="sumDisplay1D" class="sumBox"></div>
+</div>
+</div>
+
+<script>
+/* ---------------- ERROR HANDLING ---------------- */
+function showError(msg){
+    document.getElementById("errorMsg").innerHTML = msg;
+    setTimeout(function() { clearError(); }, 3000);
+}
+function clearError(){
+    document.getElementById("errorMsg").innerHTML = "";
+}
+
+/* ---------------- MAIN ARRAY FOR THE QUESTION ---------------- */
+let mainArray = [];
+let forwardIndex = 0;
+let backwardIndex = 0;
+let consoleOutput = [];
+
+function initializeArray() {
+    mainArray = [1.1, 2.2, 3.3, 4.4, 5.5, 6.6];
+    forwardIndex = 0;
+    backwardIndex = mainArray.length - 1;
+    consoleOutput = [];
+    updateMainDisplay();
+    document.getElementById("forwardStatus").innerHTML = "Array initialized. Click 'Start Forward Loop' to begin.";
+    document.getElementById("backwardStatus").innerHTML = "Complete forward loop first to see modified array.";
+    updateConsoleDisplay();
+    document.getElementById("outputDisplay").innerHTML = "Output (space-separated): ";
+    clearError();
+}
+
+function updateMainDisplay() {
+    let html = "";
+    for(let i = 0; i < mainArray.length; i++) {
+        let cls = "arrayBox";
+        if(i < forwardIndex) cls += " modified";
+        html += `<div class="${cls}">
+            <small>d[${i}]</small><br>
+            <strong>${mainArray[i].toFixed(1)}</strong>
+        </div>`;
+    }
+    document.getElementById("arrayDisplay").innerHTML = html;
+}
+
+function updateModifiedDisplay(highlightIndex) {
+    let html = "";
+    for(let i = 0; i < mainArray.length; i++) {
+        let cls = "arrayBox";
+        if(i === highlightIndex) cls += " highlight";
+        html += `<div class="${cls}">
+            <small>d[${i}]</small><br>
+            <strong>${mainArray[i].toFixed(1)}</strong>
+        </div>`;
+    }
+    document.getElementById("arrayDisplayModified").innerHTML = html;
+}
+
+function updateConsoleDisplay() {
+    // Update console with each value on a new line
+    let consoleHtml = '<div class="console-container">';
+    for(let i = 0; i < consoleOutput.length; i++) {
+        consoleHtml += '<div class="console-line">' + consoleOutput[i] + '</div>';
+    }
+    consoleHtml += '</div>';
+    document.getElementById("consoleLines").innerHTML = consoleHtml;
+    
+    // Also show space-separated version for comparison
+    if(consoleOutput.length > 0) {
+        document.getElementById("outputDisplay").innerHTML = "Output (space-separated): " + consoleOutput.join(" ");
+    } else {
+        document.getElementById("outputDisplay").innerHTML = "Output (space-separated): ";
+    }
+}
+
+function startForwardLoop() {
+    if(mainArray.length === 0) {
+        showError("Please initialize the array first!");
+        return;
+    }
+    forwardIndex = 0;
+    document.getElementById("forwardStatus").innerHTML = "Forward loop started. i = " + forwardIndex;
+    updateMainDisplay();
+}
+
+function stepForward() {
+    if(mainArray.length === 0) {
+        showError("Please initialize the array first!");
+        return;
+    }
+    
+    if(forwardIndex >= mainArray.length) {
+        document.getElementById("forwardStatus").innerHTML = "Forward loop completed! All elements modified.";
+        return;
+    }
+    
+    let oldValue = mainArray[forwardIndex];
+    mainArray[forwardIndex] = oldValue + 1.0;
+    
+    document.getElementById("forwardStatus").innerHTML = 
+        "Step " + (forwardIndex + 1) + ": d[" + forwardIndex + "] = " + oldValue.toFixed(1) + " + 1.0 = " + mainArray[forwardIndex].toFixed(1);
+    
+    forwardIndex++;
+    updateMainDisplay();
+    
+    // If forward loop is now complete, update backward status
+    if(forwardIndex >= mainArray.length) {
+        document.getElementById("backwardStatus").innerHTML = "Forward loop complete! You can now start the backward loop.";
+    }
+}
+
+function completeForwardLoop() {
+    if(mainArray.length === 0) {
+        showError("Please initialize the array first!");
+        return;
+    }
+    
+    for(let i = forwardIndex; i < mainArray.length; i++) {
+        mainArray[i] = mainArray[i] + 1.0;
+    }
+    forwardIndex = mainArray.length;
+    updateMainDisplay();
+    document.getElementById("forwardStatus").innerHTML = "Forward loop completed! All elements modified.";
+    document.getElementById("backwardStatus").innerHTML = "Forward loop complete! You can now start the backward loop.";
+}
+
+function startBackwardLoop() {
+    if(mainArray.length === 0) {
+        showError("Please initialize the array first!");
+        return;
+    }
+    
+    if(forwardIndex < mainArray.length) {
+        showError("Please complete the forward loop first!");
+        return;
+    }
+    
+    backwardIndex = mainArray.length - 1;
+    consoleOutput = [];
+    updateConsoleDisplay();
+    updateModifiedDisplay(backwardIndex);
+    document.getElementById("backwardStatus").innerHTML = "Backward loop started. Starting from i = " + backwardIndex;
+}
+
+function stepBackward() {
+    if(mainArray.length === 0) {
+        showError("Please initialize the array first!");
+        return;
+    }
+    
+    if(backwardIndex < 0) {
+        document.getElementById("backwardStatus").innerHTML = "Backward loop completed!";
+        return;
+    }
+    
+    let value = mainArray[backwardIndex];
+    consoleOutput.push(value.toFixed(1));
+    
+    document.getElementById("backwardStatus").innerHTML = 
+        "Printing d[" + backwardIndex + "] = " + value.toFixed(1) + " (System.out.println)";
+    
+    updateConsoleDisplay();
+    updateModifiedDisplay(backwardIndex);
+    backwardIndex--;
+}
+
+function resetVisualizer() {
+    mainArray = [];
+    forwardIndex = 0;
+    backwardIndex = 0;
+    consoleOutput = [];
+    document.getElementById("arrayDisplay").innerHTML = "";
+    document.getElementById("arrayDisplayModified").innerHTML = "";
+    document.getElementById("forwardStatus").innerHTML = "Click 'Initialize Array' to begin";
+    document.getElementById("backwardStatus").innerHTML = "Ready to print modified array in reverse";
+    document.getElementById("consoleLines").innerHTML = "";
+    document.getElementById("outputDisplay").innerHTML = "Output (space-separated): ";
+    clearError();
+}
+
+/* ---------------- ENHANCED 1D ARRAY VISUALIZER ---------------- */
+let arr1D = [];
+let i1D;
+let end1D;
+let step1DValue;
+let sum1D;
+
+function create1D(){
+    clearError();
+    let size = parseInt(document.getElementById("size1D").value);
+    if(isNaN(size) || size <= 0){
+        showError("Invalid array size.");
+        return;
+    }
+    let html = "<table style='margin:auto;'>";
+    for(let i = 0; i < size; i++){
+        html += "<tr><td>Index " + i + "</td><td><input type='number' step='0.1' id='v" + i + "' value='" + (i+1) + "." + (i+1) + "' style='width:80px;'></td></tr>";
+    }
+    html += "</table>";
+    document.getElementById("arrayInput1D").innerHTML = html;
+}
+
+function start1D(){
+    clearError();
+    let size = parseInt(document.getElementById("size1D").value);
+    arr1D = [];
+    for(let k = 0; k < size; k++){
+        let val = parseFloat(document.getElementById("v" + k).value);
+        if(isNaN(val)){
+            showError("Array values must be numeric.");
+            return;
+        }
+        arr1D.push(val);
+    }
+    i1D = parseInt(document.getElementById("startI1D").value);
+    end1D = parseInt(document.getElementById("endI1D").value);
+    step1DValue = parseInt(document.getElementById("step1D").value);
+    
+    if(step1DValue === 0){
+        showError("Step cannot be zero.");
+        return;
+    }
+    
+    sum1D = 0;
+    draw1D(-1);
+    document.getElementById("status1D").innerHTML = "Loop started. i = " + i1D;
+    document.getElementById("sumDisplay1D").innerHTML = "Current Value: ";
+}
+
+function step1D(){
+    if((step1DValue > 0 && i1D > end1D) || (step1DValue < 0 && i1D < end1D)){
+        document.getElementById("status1D").innerHTML = "Loop finished.";
+        return;
+    }
+    
+    // Check if index is valid
+    if(i1D < 0 || i1D >= arr1D.length) {
+        document.getElementById("status1D").innerHTML = "Index out of bounds: " + i1D;
+        return;
+    }
+    
+    let operation = document.getElementById("operation1D").value;
+    let opValue = parseFloat(document.getElementById("operationValue1D").value) || 0;
+    let value = arr1D[i1D];
+    let result = value;
+    let operationText = "";
+    
+    switch(operation) {
+        case "add":
+            result = value + opValue;
+            operationText = " + " + opValue;
+            arr1D[i1D] = result;
+            break;
+        case "multiply":
+            result = value * opValue;
+            operationText = " × " + opValue;
+            arr1D[i1D] = result;
+            break;
+        case "print":
+            operationText = " (printed)";
+            break;
+    }
+    
+    document.getElementById("status1D").innerHTML = 
+        "i = " + i1D + ": arr[" + i1D + "] = " + value.toFixed(2) + operationText + " = " + result.toFixed(2);
+    
+    if(operation === "print") {
+        document.getElementById("sumDisplay1D").innerHTML = "Printed: " + value.toFixed(2);
+    } else {
+        document.getElementById("sumDisplay1D").innerHTML = "New value: " + result.toFixed(2);
+    }
+    
+    draw1D(i1D);
+    i1D += step1DValue;
+}
+
+function draw1D(h){
+    let html = "";
+    for(let k = 0; k < arr1D.length; k++){
+        let cls = "arrayBox";
+        if(k === h) cls += " highlight";
+        html += "<div class='" + cls + "'>[" + k + "]<br>" + arr1D[k].toFixed(2) + "</div>";
+    }
+    document.getElementById("arrayDisplay1D").innerHTML = html;
+}
+
+function reset1D(){
+    arr1D = [];
+    document.getElementById("arrayDisplay1D").innerHTML = "";
+    document.getElementById("status1D").innerHTML = "";
+    document.getElementById("sumDisplay1D").innerHTML = "";
+    document.getElementById("arrayInput1D").innerHTML = "";
+    clearError();
+}
+
+// Initialize with default values on page load
+window.onload = function() {
+    initializeArray();
+    create1D();
+};
+</script>
+</body>
+</html>
